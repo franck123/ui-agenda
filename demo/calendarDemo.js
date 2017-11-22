@@ -9,6 +9,7 @@ calendarDemoApp.controller('CalendarCtrl',
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
+    var eventSelectedDate;
 
     $scope.changeTo = 'Hungarian';
     /* event source that pulls from google.com */
@@ -46,15 +47,23 @@ calendarDemoApp.controller('CalendarCtrl',
     };
     /* alert on eventClick */
     $scope.alertOnEventClick = function( date, jsEvent, view){
+        console.log("alertOnEventClick");
         $scope.alertMessage = (date.title + ' was clicked ');
     };
     /* alert on Drop */
      $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view){
+       console.log("alertOnDrop");
        $scope.alertMessage = ('Event Dropped to make dayDelta ' + delta);
     };
     /* alert on Resize */
     $scope.alertOnResize = function(event, delta, revertFunc, jsEvent, ui, view ){
        $scope.alertMessage = ('Event Resized to make dayDelta ' + delta);
+    };
+    $scope.dayClick = function(eventDate){
+      eventSelectedDate = angular.copy(eventDate);
+       console.log("dayClick", eventDate);
+       if(eventDate.add(1,'days') >= moment())
+       $('#add-event').modal('show');
     };
     /* add and removes an event source of choice */
     $scope.addRemoveEventSource = function(sources,source) {
@@ -78,6 +87,16 @@ calendarDemoApp.controller('CalendarCtrl',
         className: ['openSesame']
       });
     };
+
+    $scope.addEventWithModal = function(titre) {
+      $scope.events.push({
+        title: titre,
+        start: new Date(moment(eventSelectedDate).format('YYYY'), moment(eventSelectedDate).format('MM')-1, moment(eventSelectedDate).format('DD')),
+        //end: new Date(y, m, 29)
+      });
+      $('#add-event').modal('hide');
+    };
+
     /* remove event */
     $scope.remove = function(index) {
       $scope.events.splice(index,1);
@@ -113,7 +132,8 @@ calendarDemoApp.controller('CalendarCtrl',
         eventClick: $scope.alertOnEventClick,
         eventDrop: $scope.alertOnDrop,
         eventResize: $scope.alertOnResize,
-        eventRender: $scope.eventRender
+        eventRender: $scope.eventRender,
+        dayClick: $scope.dayClick
       }
     };
 
